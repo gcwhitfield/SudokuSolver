@@ -208,14 +208,8 @@ bool Board::solveHelper(int depth, std::unordered_set<string> *memo) {
     if (isSolved()) {
         return true;
     } else {
-        unsigned randOffset = rand() % 20;
-        unsigned xOffset = randOffset % 9;
-        unsigned yOffset = randOffset % 17;
-        unsigned x,y = 0;
-        for (unsigned _y = 0; _y < BOARD_SIZE; _y++) {
-            for (unsigned _x = 0; _x < BOARD_SIZE; _x++) {
-                x = (_x + xOffset) % 9;
-                y = (_y + yOffset) % 9;
+        for (unsigned y = 0; y < BOARD_SIZE; y++) {
+            for (unsigned x = 0; x < BOARD_SIZE; x++) {
                 if (this->data[y][x] == 0) { // if free space
                     // store the possible moves inside of 'occupied'
                     bool occupied[BOARD_SIZE];
