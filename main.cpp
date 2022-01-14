@@ -12,6 +12,5 @@ int main(int argc, char** argv)
     board->solve();
     board->print();
 
-
     return 0;
 }

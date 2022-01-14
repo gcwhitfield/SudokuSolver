@@ -1,13 +1,3 @@
-/*
-George Whitfield
-June 30, 2020
-sudoku.cpp
-
-Sudoku solver in c++
-
-g++ --std=c++11 sudoku.cpp main.cpp -O3 -Werror -Wall
-*/
-
 #include "sudoku.hpp"
 
 // prints error and potentially exits program
@@ -51,8 +41,6 @@ void Board::readBoard(string filename)
 }
 
 bool Board::isSolvedRow(size_t i) {
-    assert(i < BOARD_SIZE);
-
     char *row = this->data[i]; // only use up to 9 spots
 
     // storewhether we have seen number in a temporary array
@@ -67,7 +55,6 @@ bool Board::isSolvedRow(size_t i) {
     // if seenIndex is < 0 then the board is not completely full.
     int seenIndex = 0;
     for (int j = 0; j < BOARD_SIZE; j++) {
-        assert(0 <= row[j] && row[j] < 10);
         seenIndex = row[j] - 1;
         if (seenIndex == -1) {
             return false;
@@ -86,8 +73,6 @@ bool Board::isSolvedRow(size_t i) {
 }
 
 bool Board::isSolvedCol(size_t i) {
-    assert(i < BOARD_SIZE);
-
     // store whether we have seen number 1 - 9 in a temporary array
     bool numberSeen[BOARD_SIZE];
     for (int j = 0; j < BOARD_SIZE; j++) {
@@ -100,7 +85,6 @@ bool Board::isSolvedCol(size_t i) {
     // if seenIndex is < 0 then the board is not completely full.
     int seenIndex = 0;
     for (int j = 0; j < BOARD_SIZE; j++) {
-        assert(0 <= this->data[j][i] && this->data[j][i] < 10);
         seenIndex = this->data[j][i] - 1;
         if (seenIndex < 0) {
             return false;
@@ -122,7 +106,6 @@ bool Board::isSolvedCol(size_t i) {
 // The top 3 squares are indecies 0 - 2, the middle three are 3 - 5, and
 // the bottom are 6 - 8.
 bool Board::isSolvedSquare(size_t i) {
-
     // row and col corrspond to the large suqare, NOT individual 
     // numbers on the sudoku board.
     char row = i / 3;
@@ -142,7 +125,6 @@ bool Board::isSolvedSquare(size_t i) {
     char val = 0;
     for (int j = 0; j < BOARD_SIZE; j++) {
         val = this->data[row * 3 + (j / 3)][col * 3 + (j % 3)];
-        assert(0 <= val && val < 10);
         seenIndex = val - 1;
         if (seenIndex < 0) {
             return false;
@@ -173,84 +155,8 @@ unsigned Board::emptySpaces() {
     return result;
 }
 
-struct Board::possMovesReturn Board::possibleMoves() {
-    size_t len = 0;
-    struct possMovesReturn result;
-        
-    assert(!isFull());
-
-    // loop through each of the empty spaces, figure out the possible
-    // moves that are available, add them to a stack
-    std::stack<struct move> *s = new stack<struct move>;
-    // 'occupied' is used to store information about valid moves for 
-    // a coordinate on the sudoku board
-    bool occupied[BOARD_SIZE]; 
-    for (size_t y = 0; y < BOARD_SIZE; y++) {
-        for (size_t x = 0; x < BOARD_SIZE; x++) {
-            if (this->data[y][x] == 0) {
-                for (size_t i = 0; i < BOARD_SIZE; i++) {
-                    occupied[i] = false;
-                }
-
-                for (size_t i = 0; i < BOARD_SIZE; i++) {
-                    // loop over the row
-                    if (this->data[y][i] != 0) {
-                        occupied[this->data[y][i] - 1] = true;
-                    }
-
-                    // loop over the col
-                    if (this->data[i][x] != 0) {
-                        occupied[this->data[i][x] - 1] = true;
-                    }
-
-                    // loop over the square
-                    unsigned char squareX = (x / 3) + (i % 3);
-                    unsigned char squareY = (y / 3) + (i / 3);
-                    // loop over the col
-                    if (this->data[squareY][squareX] != 0) {
-                        assert(0 < this->data[squareY][squareX] && this->data[squareY][squareX] < 10);
-                        occupied[this->data[squareY][squareX] - 1] = true;
-                    }
-                }
-
-                // add all of the 'false' values of occupied to the moves
-                // stack
-                for (size_t i = 0; i < BOARD_SIZE; i++) {
-                    if (!occupied[i]) {
-                        struct move m;
-                        m.x = x;
-                        m.y = y;
-                        m.val = i + 1;
-                        len++;
-                        s->push(m);
-                    }
-                }
-            }
-        }
-    }
-    struct move *moves = new struct move[len];
-    // loop through the stack and add all of the elements to an array
-    unsigned i = 0;
-    while (!s->empty()) {
-        struct move m = s->top();
-        moves[i] = m;
-        s->pop();
-        i++;
-    }
-
-    result.moves = moves;
-    result.len = len;
-    
-    // the number of possible moves will be at MOST the number of 
-    // empty spaces * 81
-    assert(len <= emptySpaces() * 81);
-    delete s;
-    return result;
-}
-
 bool Board::validMoves(unsigned x, unsigned y, bool *occupied) {
     // precondition: array is at least size BOARD_SIZE
-    assert(occupied != nullptr);
     for (unsigned i = 0; i < BOARD_SIZE; i++) {
         occupied[i] = false;
     }
@@ -271,7 +177,6 @@ bool Board::validMoves(unsigned x, unsigned y, bool *occupied) {
         unsigned char squareX = (x / 3) * 3 + (i % 3);
         unsigned char squareY = (y / 3) * 3 + (i / 3);
         if (this->data[squareY][squareX] != 0) {
-            assert(0 < this->data[squareY][squareX] && this->data[squareY][squareX] < 10);
             occupied[this->data[squareY][squareX] - 1] = true;
         }
     }
@@ -285,23 +190,32 @@ bool Board::validMoves(unsigned x, unsigned y, bool *occupied) {
     return false;
 }
 
-bool Board::solveHelper(int depth, std::unordered_set<string> &memo) {
+bool Board::solveHelper(int depth, std::unordered_set<string> *memo) {
 
     // memoization: when an invalid board is created, it is put inside 
     // of the memo. if it is found inside the memo when solveHelper is 
     // called, then we can instantly return false 
-    if (memo.find(this->hash()) != memo.end()) {
+    if (memo->find(this->hash()) != memo->end()) {
         numSuccessfulMemoHits++;
         return false;
     }
 
     numBoardsChecked++;
+    if (numBoardsChecked % 100000 == 0) {
+        cout << "Number of sudoku boards checked: " << numBoardsChecked << endl;
+    }
 
-    if (isFull() && isSolved()) {
+    if (isSolved()) {
         return true;
     } else {
-        for (unsigned y = 0; y < BOARD_SIZE; y++) {
-            for (unsigned x = 0; x < BOARD_SIZE; x++) {
+        unsigned randOffset = rand() % 20;
+        unsigned xOffset = randOffset % 9;
+        unsigned yOffset = randOffset % 17;
+        unsigned x,y = 0;
+        for (unsigned _y = 0; _y < BOARD_SIZE; _y++) {
+            for (unsigned _x = 0; _x < BOARD_SIZE; _x++) {
+                x = (_x + xOffset) % 9;
+                y = (_y + yOffset) % 9;
                 if (this->data[y][x] == 0) { // if free space
                     // store the possible moves inside of 'occupied'
                     bool occupied[BOARD_SIZE];
@@ -312,19 +226,19 @@ bool Board::solveHelper(int depth, std::unordered_set<string> &memo) {
                                 if (solveHelper(depth + 1, memo)) {
                                     return true;
                                 }
-                                memo.insert(this->hash());
+                                memo->insert(this->hash());
                                 undoMove(x, y);
                             }
                         }
                     } else {
-                        memo.insert(this->hash());
+                        memo->insert(this->hash());
                         return false; // return false if there exists an 
                         // empty cell without any valid moves
                     }
                 }
             }
         }
-        memo.insert(this->hash());
+        memo->insert(this->hash());
         return false; // return false if we've looped over the entire 
         // board and haven't found a solution 
     }
@@ -400,7 +314,6 @@ bool Board::isFull() {
     for (size_t y = 0; y < BOARD_SIZE; y++) {
         for (size_t x = 0; x < BOARD_SIZE; x++) {
             val = this->data[y][x];
-            assert(0 <= val && val < 10);
             if (val == 0) { 
                 return false;
             }
@@ -471,5 +384,5 @@ void Board::checkIsValidBoard() {
 bool Board::solve() {
     cout << "Solving..." << endl;
     std::unordered_set<string> memo;
-    return this->solveHelper(0, memo);
+    return this->solveHelper(0, std::addressof(memo));
 }

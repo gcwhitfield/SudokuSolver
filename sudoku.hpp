@@ -1,3 +1,13 @@
+/*
+George Whitfield
+January 13, 2022
+sudoku.hpp
+
+Sudoku solver in c++
+
+g++ --std=c++11 sudoku.cpp main.cpp -O3 -Werror -Wall
+*/
+
 #include <string>
 #include <iostream>
 #include <assert.h>
@@ -43,17 +53,7 @@ class Board {
         
         // returns the number of empty spaces on the board
         unsigned emptySpaces();
-
-        struct possMovesReturn {
-            size_t len;
-            struct move *moves;
-        };
-
-        // populates possibleMoves with an array of possible moves
-        // return value is the length of possibleMoves
-        // the 'moves' field of return value needs to be freed by the user
-        struct possMovesReturn possibleMoves();
-
+        
         // stores the valid moved for data[y][x] inside of a bool array
         bool validMoves(unsigned x, unsigned y, bool *occupied);
 
@@ -61,7 +61,7 @@ class Board {
         // emptyCells: a set of all of the cells (x,y) in the sudoku board that are
         // open
         // memo: set of all of the dead boards
-        bool solveHelper(int depth, std::unordered_set<string> &memo);
+        bool solveHelper(int depth, std::unordered_set<string> *memo);
         
         // makes the move m on the board.
         // return value: the value of the old position on the board
