@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/george/Desktop/Programming/SudokuSolver/src/Sudoku.cpp
+Sudoku.hpp
+/Users/george/Desktop/Programming/SudokuSolver/src/Sudoku.hpp
+
+/Users/george/Desktop/Programming/SudokuSolver/src/Sudoku.hpp
+string
+-
+iostream
+-
+assert.h
+-
+unordered_set
+-
+set
+-
+fstream
+-
+random
+-
+
